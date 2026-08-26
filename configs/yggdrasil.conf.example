@@ -1,0 +1,40 @@
+{
+  # PrivateKey: [REDACTED - generate your own with: yggdrasil -genconf]
+
+  Peers: [
+    "tls://ygg1.mk16.de:1338?key=0000000087ee9949eeab56bd430ee8f324cad55abf3993ed9b9be63ce693e18a"
+    "tls://ygg2.mk16.de:1338?key=000000d80a2d7b3126ea65c8c08fc751088c491a5cdd47eff11c86fa1e4644ae"
+    "tls://ygg7.mk16.de:1338?key=000000086278b5f3ba1eb63acb5b7f6e406f04ce83990dee9c07f49011e375ae"
+    "tls://nl1.route172.de:443?key=000000002643ae27bad63e2a81f1d30554ce9ea634f5990062a9e079e23593cd"
+  ]
+
+  InterfacePeers: {}
+
+  Listen: []
+
+  AdminListen: "unix:///var/run/yggdrasil/yggdrasil.sock"
+
+  MulticastInterfaces: [
+    {
+      Regex: ".*"
+      Beacon: true
+      Listen: true
+      Port: 0
+      Priority: 0
+      Password: ""
+    }
+  ]
+
+  AllowedPublicKeys: []
+
+  IfName: "auto"
+
+  IfMTU: 65535
+
+  NodeInfoPrivacy: false
+
+  NodeInfo: {
+    name: "LuminaCyberspace-Nexus-Node"
+    status: "Nexus Mesh Node - Hannover / Esslinger & Co."
+  }
+}
