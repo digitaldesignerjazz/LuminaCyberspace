@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# install-runner-jit.sh — Hannover-Primary per Just-in-Time Config.
+# install-runner-jit.sh — Hannover-Primary, Dauerbetrieb per systemd.
 # Kein Registration-Token, kein PAT auf dem Node. Holt encoded_jit_config
-# über die GitHub-API und startet den Runner mit run.sh --jitconfig.
+# über die GitHub-API, registriert den Runner und aktiviert die systemd-Unit
+# mit Restart=always (frisches JIT-Config bei jedem Start).
 # Aufruf auf Hannover:
 #   sudo bash install-runner-jit.sh <PAT>
 # Oder: export GITHUB_PAT=<PAT> && sudo -E bash install-runner-jit.sh
@@ -17,6 +18,8 @@ RUNNER_NAME="hannover-primary"
 LABELS='["self-hosted","linux","x64","hannover"]'
 WORK_FOLDER="_work"
 RUNNER_GROUP_ID="1"
+SERVICE_SRC="scripts/hannover-primary.service"
+SERVICE_DST="/etc/systemd/system/hannover-primary.service"
 
 if [[ -z "$PAT" ]]; then
   echo "Usage: sudo bash install-runner-jit.sh <PAT>" >&2
@@ -29,7 +32,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-echo "[1/5] encoded_jit_config von der API holen..."
+echo "[1/6] encoded_jit_config von der API holen (Probe)..."
 RESP=$(curl -sS -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $PAT" \
@@ -44,9 +47,9 @@ if [[ -z "$JIT" ]]; then
   echo "$RESP" >&2
   exit 1
 fi
-echo "JIT-Config erhalten."
+echo "JIT-Config erhalten (Probe erfolgreich)."
 
-echo "[2/5] Runner v$RUNNER_VER laden..."
+echo "[2/6] Runner v$RUNNER_VER laden..."
 mkdir -p "$RUNNER_DIR" && cd "$RUNNER_DIR"
 if [[ ! -x ./run.sh ]]; then
   curl -fsSL -o runner.tgz \
@@ -54,20 +57,52 @@ if [[ ! -x ./run.sh ]]; then
   tar xzf runner.tgz
 fi
 
-echo "[3/5] JIT-Runner starten (ephemeral, ein Job)..."
-export RUNNER_ALLOW_RUNASROOT=1
-nohup ./run.sh --jitconfig "$JIT" > /var/log/hannover-primary-runner.log 2>&1 &
-echo $! > /var/run/hannover-primary-runner.pid
-sleep 3
+echo "[3/6] PAT für systemd-Unit hinterlegen..."
+install -d -m 700 /etc/hannover-runner
+echo "GITHUB_PAT=$PAT" > /etc/hannover-runner/env
+chmod 600 /etc/hannover-runner/env
 
-echo "[4/5] Prüfe Verbindung..."
-if grep -q "Connected to GitHub" /var/log/hannover-primary-runner.log 2>/dev/null; then
-  echo "Verbunden. Runner $RUNNER_NAME ist online."
+echo "[4/6] systemd-Unit installieren..."
+# Service-Datei aus dem geklonten Repo, Fallback auf Inline-Version
+if [[ -f "$SERVICE_SRC" ]]; then
+  cp "$SERVICE_SRC" "$SERVICE_DST"
 else
-  echo "Log (Tail):" >&2
-  tail -n 20 /var/log/hannover-primary-runner.log >&2 || true
+  cat > "$SERVICE_DST" <<'UNIT'
+[Unit]
+Description=Hannover-Primary GitHub Actions Runner (JIT, Dauerbetrieb)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/actions-runner
+EnvironmentFile=-/etc/hannover-runner/env
+Environment=RUNNER_ALLOW_RUNASROOT=1
+ExecStartPre=/bin/bash -c 'curl -sS -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_PAT}" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: application/json" https://api.github.com/repos/digitaldesignerjazz/LuminaCyberspace/actions/runners/generate-jitconfig -d '\''{"name":"hannover-primary","runner_group_id":1,"labels":["self-hosted","linux","x64","hannover"],"work_folder":"_work"}'\'' | sed -n '\''s/.*"encoded_jit_config"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p'\'' > /tmp/jitconfig'
+ExecStart=/opt/actions-runner/run.sh --jitconfig /tmp/jitconfig
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+fi
+systemctl daemon-reload
+
+echo "[5/6] Dienst aktivieren und starten..."
+systemctl enable hannover-primary.service
+systemctl restart hannover-primary.service
+sleep 4
+
+echo "[6/6] Status..."
+if systemctl is-active --quiet hannover-primary.service; then
+  echo "Dauerbetrieb aktiv: hannover-primary.service läuft."
+  systemctl --no-pager --full status hannover-primary.service | head -n 12
+else
+  echo "Dienst nicht aktiv. Log:" >&2
+  journalctl -u hannover-primary.service -n 30 --no-pager >&2 || true
+  exit 1
 fi
 
-echo "[5/5] Hinweis: JIT-Runner ist ephemeral — nach einem Job deregistriert er sich."
-echo "Für Dauerbetrieb: systemd-Unit mit Restart=always und neuem JIT-Fetch pro Start."
-echo "Fertig."
+echo "Fertig. Runner $RUNNER_NAME ist im Dauerbetrieb."
