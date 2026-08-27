@@ -1,7 +1,9 @@
-# Hannover-Primary per JIT-Config (ohne Registration-Token)
+# Hannover-Primary per JIT-Config (Dauerbetrieb)
 
 Der Runner holt sich seine Konfiguration selbst über die GitHub-API
 (`generate-jitconfig`). Kein manuelles Token-Kopieren, kein Ablauf-Stress.
+Läuft als systemd-Dienst mit `Restart=always` — bei jedem Neustart
+frisches JIT-Config, kein ephemeral-Abbruch mehr.
 
 ## Voraussetzungen
 
@@ -9,7 +11,7 @@ Der Runner holt sich seine Konfiguration selbst über die GitHub-API
 - `curl`, `sudo`, Internet
 - Ein PAT mit `repo`-Scope (classic) oder Administration: write (fine-grained)
 
-## Installation
+## Installation (ein Befehl)
 
 ```bash
 git clone https://github.com/digitaldesignerjazz/LuminaCyberspace.git
@@ -26,17 +28,23 @@ sudo -E bash scripts/install-runner-jit.sh
 
 ## Was passiert
 
-1. `encoded_jit_config` wird von der API geholt.
+1. Probe: `encoded_jit_config` wird von der API geholt.
 2. Runner v2.323.0 wird geladen (falls nicht vorhanden).
-3. `./run.sh --jitconfig <config>` startet den Runner im Hintergrund.
-4. Labels: `self-hosted,linux,x64,hannover`.
-5. Name: `hannover-primary`.
+3. PAT wird in `/etc/hannover-runner/env` hinterlegt (chmod 600).
+4. `hannover-primary.service` wird installiert und aktiviert.
+5. `systemctl restart hannover-primary` — der Dienst holt bei jedem Start
+   ein frisches JIT-Config und startet `run.sh --jitconfig`.
+6. Labels: `self-hosted,linux,x64,hannover`. Name: `hannover-primary`.
 
-## Wichtig
+## Dauerbetrieb
 
-JIT-Runner sind **ephemeral**: nach einem Job deregistriert er sich automatisch.
-Für Dauerbetrieb eine systemd-Unit mit `Restart=always` und neuem JIT-Fetch
-pro Start verwenden (folgt in `scripts/hannover-primary.service`).
+```bash
+sudo systemctl status hannover-primary
+sudo journalctl -u hannover-primary -f
+```
 
-Sobald der Runner online ist, greifen die wartenden Workflow-Runs und spielen
-die Yggdrasil-Config ein.
+Fällt der Prozess, startet systemd ihn nach 10 Sekunden neu — mit
+neuem JIT-Config. Kein manueller Eingriff nötig.
+
+Sobald der Runner online ist, greifen die wartenden Workflow-Runs und
+spielen die Yggdrasil-Config ein.
