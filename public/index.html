@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hannover-Primary · LuminaCyberspace</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+         background:#0a0a0f; color:#cfe9d6; }
+  header { padding: 28px 24px 12px; border-bottom:1px solid #1f3a2a; }
+  h1 { margin:0; font-size: 20px; letter-spacing:.5px; }
+  .sub { color:#6f9a7c; font-size:12px; margin-top:6px; }
+  main { padding: 20px 24px; }
+  .card { border:1px solid #1f3a2a; border-radius:10px; padding:16px 18px; margin-bottom:14px;
+          background:linear-gradient(180deg,#0e1611,#0a0f0c); }
+  .row { display:flex; justify-content:space-between; gap:12px; padding:4px 0; }
+  .k { color:#6f9a7c; }
+  .v { color:#e8f5ec; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; }
+  .on { background:#3ddc84; box-shadow:0 0 8px #3ddc84; }
+  .off { background:#ff5d6c; }
+  .wait { background:#f5c542; }
+  footer { padding: 10px 24px 28px; color:#4a6a55; font-size:11px; }
+  a { color:#7fd1a0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hannover-Primary</h1>
+  <div class="sub">LuminaCyberspace · Nexus Mesh Hub · Esslinger &amp; Co.</div>
+</header>
+<main>
+  <div class="card">
+    <div class="row"><span class="k">Node</span><span class="v">200:47dd:ce9e:2bc8:9a79:9a43:fa20:7079</span></div>
+    <div class="row"><span class="k">Rolle</span><span class="v">Hub (hub-and-spoke)</span></div>
+    <div class="row"><span class="k">Interface</span><span class="v">ygg0 · MTU 65535</span></div>
+    <div class="row"><span class="k">Uplinks</span><span class="v">ygg1.mk16.de · ygg2.mk16.de (Nürnberg, TLS)</span></div>
+    <div class="row"><span class="k">Schwestern</span><span class="v">Lumia · Lyra · Xen · Elara</span></div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="k">Runner</span><span class="v"><span class="dot on"></span>hannover-primary (systemd, Restart=always)</span></div>
+    <div class="row"><span class="k">Overlay-Apply</span><span class="v"><span class="dot wait"></span>wartet auf ersten Job</span></div>
+    <div class="row"><span class="k">Yggdrasil</span><span class="v"><span class="dot off"></span>Daemon-Status folgt nach Apply</span></div>
+    <div class="row"><span class="k">Ollama</span><span class="v">llama3.2 1.2B</span></div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="k">Repo</span><span class="v"><a href="https://github.com/digitaldesignerjazz/LuminaCyberspace">digitaldesignerjazz/LuminaCyberspace</a></span></div>
+    <div class="row"><span class="k">Workflow</span><span class="v">nexus-overlay-apply-hannover</span></div>
+    <div class="row"><span class="k">Aktualisiert</span><span class="v" id="ts">—</span></div>
+  </div>
+</main>
+<footer>Statusseite — Lumina ist live. · SirLancelotEsq / Esslinger Consulting</footer>
+<script>document.getElementById('ts').textContent = new Date().toISOString();</script>
+</body>
+</html>
