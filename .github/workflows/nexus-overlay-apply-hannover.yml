@@ -10,9 +10,19 @@ jobs:
     steps:
       - name: Checkout LuminaCyberspace
         uses: actions/checkout@v4
-      - name: Apply Hannover overlay config
+
+      - name: Backup, apply config, restart daemon
         run: sudo bash scripts/configure-overlay.sh configs/yggdrasil-hannover.conf
-      - name: Report peers
+
+      - name: Status report
         run: |
+          echo "=== getSelf ==="
           yggdrasilctl getSelf || true
+          echo "=== getPeers sort=cost ==="
           yggdrasilctl getPeers sort=cost || true
+          echo "=== getTree ==="
+          yggdrasilctl getTree || true
+          echo "=== daemon status ==="
+          systemctl is-active yggdrasil || true
+          echo "=== latest backup ==="
+          ls -1t /etc/yggdrasil/yggdrasil.conf.bak.* 2>/dev/null | head -1 || echo "no backup"
