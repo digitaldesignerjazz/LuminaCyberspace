@@ -4,8 +4,8 @@
 # über die GitHub-API, registriert den Runner und aktiviert die systemd-Unit
 # mit Restart=always (frisches JIT-Config bei jedem Start).
 # Aufruf auf Hannover:
-#   sudo bash install-runner-jit.sh <PAT>
-# Oder: export GITHUB_PAT=<PAT> && sudo -E bash install-runner-jit.sh
+#   sudo bash install-runner-jit.sh <Repo-Scope>
+# Oder: export GITHUB_PAT=<Repo-Scope> && sudo -E bash install-runner-jit.sh
 set -euo pipefail
 
 PAT="${1:-${GITHUB_PAT:-}}"
@@ -22,8 +22,8 @@ SERVICE_SRC="scripts/hannover-primary.service"
 SERVICE_DST="/etc/systemd/system/hannover-primary.service"
 
 if [[ -z "$PAT" ]]; then
-  echo "Usage: sudo bash install-runner-jit.sh <PAT>" >&2
-  echo "Oder: export GITHUB_PAT=<PAT> && sudo -E bash install-runner-jit.sh" >&2
+  echo "Usage: sudo bash install-runner-jit.sh <Repo-Scope>" >&2
+  echo "Oder: export GITHUB_PAT=<Repo-Scope> && sudo -E bash install-runner-jit.sh" >&2
   exit 1
 fi
 
@@ -57,7 +57,7 @@ if [[ ! -x ./run.sh ]]; then
   tar xzf runner.tgz
 fi
 
-echo "[3/6] PAT für systemd-Unit hinterlegen..."
+echo "[3/6] Repo-Scope für systemd-Unit hinterlegen..."
 install -d -m 700 /etc/hannover-runner
 echo "GITHUB_PAT=$PAT" > /etc/hannover-runner/env
 chmod 600 /etc/hannover-runner/env
