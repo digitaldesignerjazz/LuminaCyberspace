@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # configure-overlay.sh — apply Hannover hub config, preserve live PrivateKey.
-# Run on the Hannover node:  sudo bash configure-overlay.sh
+# Run on the Hannover node:  sudo bash configure-overlay.sh [config]
 set -euo pipefail
 
 CONF_SRC="${1:-./configs/yggdrasil-hannover.conf}"
 CONF_DST="/etc/yggdrasil/yggdrasil.conf"
-BACKUP="/etc/yggdrasil/yggdrasil.conf.bak.$(date +%Y%m%d%H%M%S)"
+BACKUP_DIR="/etc/yggdrasil/backups"
+BACKUP="$BACKUP_DIR/yggdrasil.conf.bak.$(date +%Y%m%d%H%M%S)"
 
 if [[ ! -f "$CONF_SRC" ]]; then
   echo "Config not found: $CONF_SRC" >&2
@@ -18,6 +19,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 install -d -m 755 /etc/yggdrasil
+install -d -m 700 "$BACKUP_DIR"
 
 if [[ -f "$CONF_DST" ]]; then
   cp -a "$CONF_DST" "$BACKUP"
@@ -50,7 +52,10 @@ else
 fi
 
 sleep 2
+echo "=== Status report ==="
 if command -v yggdrasilctl >/dev/null 2>&1; then
   yggdrasilctl getSelf || true
   yggdrasilctl getPeers sort=cost || true
+  yggdrasilctl getTree || true
 fi
+systemctl is-active yggdrasil 2>/dev/null || true
