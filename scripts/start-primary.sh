@@ -3,7 +3,7 @@
 # Selbstheilend: installiert den Runner, falls nötig, startet den Dienst,
 # wartet auf den ersten erfolgreichen Job und meldet den Status.
 # Aufruf auf Hannover:
-#   sudo bash scripts/start-primary.sh <PAT>
+#   sudo bash scripts/start-primary.sh <Repo-Scope>
 set -euo pipefail
 
 PAT="${1:-${GITHUB_PAT:-}}"
@@ -14,7 +14,7 @@ RUNNER_DIR="/opt/actions-runner"
 SERVICE="hannover-primary.service"
 
 if [[ -z "$PAT" ]]; then
-  echo "Usage: sudo bash scripts/start-primary.sh <PAT>" >&2
+  echo "Usage: sudo bash scripts/start-primary.sh <Repo-Scope>" >&2
   exit 1
 fi
 
