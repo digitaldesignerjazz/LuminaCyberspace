@@ -16,13 +16,13 @@ frisches JIT-Config, kein ephemeral-Abbruch mehr.
 ```bash
 git clone https://github.com/digitaldesignerjazz/LuminaCyberspace.git
 cd LuminaCyberspace
-sudo bash scripts/install-runner-jit.sh <PAT>
+sudo bash scripts/install-runner-jit.sh <Repo-Scope>
 ```
 
 Oder mit Env-Variable:
 
 ```bash
-export GITHUB_PAT=<PAT>
+export GITHUB_PAT=<Repo-Scope>
 sudo -E bash scripts/install-runner-jit.sh
 ```
 
@@ -30,7 +30,7 @@ sudo -E bash scripts/install-runner-jit.sh
 
 1. Probe: `encoded_jit_config` wird von der API geholt.
 2. Runner v2.323.0 wird geladen (falls nicht vorhanden).
-3. PAT wird in `/etc/hannover-runner/env` hinterlegt (chmod 600).
+3. Repo-Scope wird in `/etc/hannover-runner/env` hinterlegt (chmod 600).
 4. `hannover-primary.service` wird installiert und aktiviert.
 5. `systemctl restart hannover-primary` — der Dienst holt bei jedem Start
    ein frisches JIT-Config und startet `run.sh --jitconfig`.
