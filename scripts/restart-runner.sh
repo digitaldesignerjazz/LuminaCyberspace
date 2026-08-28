@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
-# restart-runner.sh — Hannover self-hosted Runner neu starten.
-# Auf Hannover:  sudo bash restart-runner.sh
+# Stoppt und startet den Self-Hosted Runner-Dienst auf dem Hannover-Knoten.
+# Aufruf: sudo bash scripts/restart-runner.sh
 set -euo pipefail
 
 RUNNER_DIR="/opt/actions-runner"
+SERVICE="hannover-primary"
 
-if [[ $EUID -ne 0 ]]; then
-  echo "Run as root (sudo)." >&2
-  exit 1
+if [ -d "$RUNNER_DIR" ]; then
+  cd "$RUNNER_DIR"
+  echo "Stoppe Runner in $RUNNER_DIR..."
+  sudo ./svc.sh stop || true
+  sleep 2
+  echo "Starte Runner..."
+  sudo ./svc.sh start
+  echo "Runner neu gestartet."
+  exit 0
 fi
 
-if [[ ! -d "$RUNNER_DIR" ]]; then
-  echo "Runner-Verzeichnis $RUNNER_DIR fehlt. Bitte zuerst install-runner-pat.sh ausführen." >&2
-  exit 1
+if systemctl list-unit-files | grep -q "${SERVICE}"; then
+  echo "Stoppe systemd-Unit ${SERVICE}..."
+  sudo systemctl stop "${SERVICE}" || true
+  sleep 2
+  echo "Starte ${SERVICE}..."
+  sudo systemctl start "${SERVICE}"
+  echo "Dienst ${SERVICE} neu gestartet."
+  exit 0
 fi
 
-cd "$RUNNER_DIR"
-
-echo "[1/3] Runner-Dienst stoppen..."
-./svc.sh stop || true
-
-echo "[2/3] Runner-Dienst starten..."
-./svc.sh start
-
-echo "[3/3] Status:"
-./svc.sh status || true
-
-echo "Fertig. Runner hannover-primary sollte jetzt online sein."
+echo "Weder $RUNNER_DIR noch Unit ${SERVICE} gefunden." >&2
+exit 1
