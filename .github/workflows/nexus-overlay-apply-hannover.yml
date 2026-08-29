@@ -1,15 +1,27 @@
 name: nexus-overlay-apply-hannover
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 22 * * *'  # 00:30 Europe/Berlin
+    - cron: "30 22 * * *"
+
+concurrency:
+  group: hannover-overlay
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   apply:
-    runs-on: self-hosted
+    name: Apply Hannover overlay
+    runs-on: [self-hosted, linux, hannover]
+    timeout-minutes: 20
     steps:
       - name: Checkout LuminaCyberspace
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Backup, apply config, restart daemon
         run: sudo bash scripts/configure-overlay.sh configs/yggdrasil-hannover.conf
