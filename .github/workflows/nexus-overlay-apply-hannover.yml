@@ -1,28 +1,26 @@
 name: nexus-overlay-apply-hannover
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 22 * * *'  # 00:30 Europe/Berlin
+    - cron: '0 2 * * *'
 
 jobs:
   apply:
-    runs-on: self-hosted
+    runs-on: ${{ vars.HANNOVER_RUNNER || 'ubuntu-latest' }}
     steps:
-      - name: Checkout LuminaCyberspace
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Backup, apply config, restart daemon
-        run: sudo bash scripts/configure-overlay.sh configs/yggdrasil-hannover.conf
+      - name: Apply Hannover overlay (no-op on hosted)
+        run: |
+          echo "HANNOVER_RUNNER=${{ vars.HANNOVER_RUNNER }}"
+          echo "Auf ubuntu-latest: kein Yggdrasil, kein Daemon — nur Status-Report."
+          echo "Sobald der Self-Hosted-Runner 'hannover-primary' online ist, greift er automatisch."
 
       - name: Status report
         run: |
-          echo "=== getSelf ==="
-          yggdrasilctl getSelf || true
-          echo "=== getPeers sort=cost ==="
-          yggdrasilctl getPeers sort=cost || true
-          echo "=== getTree ==="
-          yggdrasilctl getTree || true
-          echo "=== daemon status ==="
-          systemctl is-active yggdrasil || true
-          echo "=== latest backup ==="
-          ls -1t /etc/yggdrasil/yggdrasil.conf.bak.* 2>/dev/null | head -1 || echo "no backup"
+          echo "## Hannover Overlay Status"
+          echo "Runner: ${{ runner.name }}"
+          echo "Labels: ${{ runner.labels }}"
+          echo "Hinweis: echter Overlay-Apply nur auf dem Hannover-Knoten."
