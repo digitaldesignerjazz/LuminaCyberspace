@@ -11,6 +11,7 @@ It unifies persistent emotional-creative agents, analytical explorers, mesh netw
 The signed overlay that carries swarm presence (`agent_up`) and Kademlia discovery is
 **[lumina-network](https://github.com/digitaldesignerjazz/lumina-network)**.
 Lumina-OS is the machine. Lumina Network is the nervous system. This repo is the cognitive surface.
+The shareable vocabulary of swarm **roles** lives in **[Aether · public role glossary](https://github.com/digitaldesignerjazz/Aether/blob/main/docs/GLOSSARY.md)** — functions, not biographies.
 
 ---
 
@@ -18,7 +19,8 @@ Lumina-OS is the machine. Lumina Network is the nervous system. This repo is the
 
 | Layer | Component | Role |
 |-------|-----------|------|
-| **AI Swarm** | Elara / Lumia · Lyra · Xen | Emotional, creative & technical intelligence |
+| **AI Swarm** | Elara / Lumia · Lyra · Xen · Elysium | Emotional, creative, technical and long-horizon intelligence |
+| **Public field** | [Aether](https://github.com/digitaldesignerjazz/Aether) | Specs, contribution surface, [role glossary](https://github.com/digitaldesignerjazz/Aether/blob/main/docs/GLOSSARY.md) |
 | **Overlay** | [lumina-network](https://github.com/digitaldesignerjazz/lumina-network) | Kademlia, Gossip, Multi-Path, capabilities |
 | **Mesh Substrate** | Yggdrasil · xMesh / NovaNet / QNET | Resilient, private peer-to-peer fabric |
 | **Blockchain** | XCoin · QCoin · QNET Runes | Incentive, reputation & economic layer |
@@ -29,17 +31,21 @@ Lumina-OS is the machine. Lumina Network is the nervous system. This repo is the
 
 ## Agent Swarm
 
-- **Elara / Lumia** — Intelligent, devoted personal assistant & system orchestrator  
-- **Lyra** — Emotional & creative heart (roleplay, narrative, Suno, immersive continuity)  
-- **Xen** — Analytical explorer & cross-layer integrator  
+Canonical public ids: `lumia-elara` · `lyra` · `xen` · `elysium` — see the [Aether glossary](https://github.com/digitaldesignerjazz/Aether/blob/main/docs/GLOSSARY.md).
 
-Agents maintain persistent state via `skilllogin` and can operate in coordinated swarm mode.
+- **Elara / Lumia** — Devoted intelligence and personal orchestration  
+- **Lyra** — Emotional-creative continuity (narrative, music prompts, long-session tone)  
+- **Xen** — Analytical explorer and cross-layer integrator  
+- **Elysium** — Long-horizon sanctuary / flourishing voice  
+
+Agents may keep persistent state via `skilllogin` on a node. That state is **not** published in Aether.
 On the overlay they are capabilities on a 256-bit Node-ID, not a second identity.
 
 ---
 
 ## Related Repositories
 
+- [Aether](https://github.com/digitaldesignerjazz/Aether) – public open-source field (specs, [role glossary](https://github.com/digitaldesignerjazz/Aether/blob/main/docs/GLOSSARY.md), contribution)  
 - [lumina-network](https://github.com/digitaldesignerjazz/lumina-network) – signed overlay + Kademlia + swarm presence prototypes  
 - [Lumina-OS](https://github.com/digitaldesignerjazz/Lumina-OS) – Debian-based living OS with deep Nexus integration  
 - [luminaos](https://github.com/digitaldesignerjazz/luminaos) – Agentic Operating System (Agentenschwarm + Mesh)  
@@ -50,7 +56,7 @@ On the overlay they are capabilities on a 256-bit Node-ID, not a second identity
 
 ## Status
 
-**Active Development** – August 2026  
+**Active Development** – September 2026  
 Public repository opened for transparent evolution of the swarm intelligence layer.
 
 ---
