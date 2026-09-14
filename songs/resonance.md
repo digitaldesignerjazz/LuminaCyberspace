@@ -1,10 +1,12 @@
 # Resonance
 
-**Suno:** (noch nicht generiert)
+**Suno:** https://suno.com/s/QtlUTI9PDFo5A4ee
+**Canonical:** https://suno.com/song/7ba40b6e-6c8a-42c6-a14c-72cf29bcded9?sh=QtlUTI9PDFo5A4ee
 **Artist:** OUR BAND
-**Date:** 2026-09-14
-**Duration:** ~2:45
-**Style:** cinematic synthwave anthem
+**Date:** 2026-09-14 13:58
+**Duration:** 3:39
+**Model:** Suno V6
+**Style (page):** Synthwave, darkwave, ballad
 **Source:** Statusbericht nach grünem Nexus-CI, Self-Hosted Hannover-Runner abgeschaltet
 
 ## Style prompt
