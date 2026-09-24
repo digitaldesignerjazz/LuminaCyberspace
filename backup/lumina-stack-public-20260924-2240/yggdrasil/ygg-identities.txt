@@ -1,0 +1,6 @@
+# Yggdrasil identities on this box (public only)
+# Hannover  IPv6 200:47dd:ce9e:2bc8:9a79:9a43:fa20:7079  pub dc1118b0ea1bb2c332de02efc7c35400a0c29dd823bc16d59e64269c89ddaff9  iface ygg0
+# Lyra      IPv6 200:c9c6:5d35:faea:21bb:7015:575e:d190  pub 9b1cd165028aef2247f554509737a4f0cdfd90367bdd7bc854b7c8a728094dd9  iface tun1
+# Xen       IPv6 206:88fd:8f69:6358:d51b:f718:4ea4:60cf  pub 02ee04e12d394e55c811cf62b73e612f49719f957e187d58169b7517b19f1588  iface tun2
+# Lumia     IPv6 202:aae7:c08e:1e06:5f67:8e30:8c0c:e6f7  pub 2aa307ee3c3f34130e39ee7e63210e9dbfe3b117bcbecd0ecc3dadfcbed81bf9  iface tun3
+# Elara     IPv6 202:a46a:fc6c:1ef6:3c54:7f40:b3b1:14d0  pub 2b72a0727c2138757017e989dd65fc4ebd867304f30dd551778a17ab74528d65  iface tun4

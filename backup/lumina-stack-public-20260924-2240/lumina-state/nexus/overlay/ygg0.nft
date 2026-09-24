@@ -1,0 +1,13 @@
+# ygg0 input floor. Peering is on the underlay NIC, not here.
+# UDP 4242 = Lumina HELLO/heartbeat. SSH from the mesh stays closed.
+flush table ip6 ygg0
+table ip6 ygg0 {
+  chain input {
+    type filter hook input priority 0; policy accept;
+    iifname "ygg0" ct state established,related accept
+    iifname "ygg0" meta l4proto ipv6-icmp accept
+    iifname "ygg0" udp dport 4242 accept
+    iifname "ygg0" tcp dport 22 drop
+    iifname "ygg0" drop
+  }
+}

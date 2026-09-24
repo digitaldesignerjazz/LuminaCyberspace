@@ -1,0 +1,126 @@
+{
+  "principle": "Spannbaum kurz halten: nur Hannover hat öffentliche Weitstrecken. Blätter peeren lokal oder sternförmig nach Hannover.",
+  "multicast_password": "<REDACTED>",
+  "hub": {
+    "name": "Hannover",
+    "role": "home-uplink",
+    "site": "Hannover / Esslinger & Co.",
+    "ifname": "ygg0",
+    "ipv6": "200:47dd:ce9e:2bc8:9a79:9a43:fa20:7079",
+    "pubkey": "dc1118b0ea1bb2c332de02efc7c35400a0c29dd823bc16d59e64269c89ddaff9",
+    "listen": [],
+    "public_peers": [
+      "tls://ygg1.mk16.de:1338?key=0000000087ee9949eeab56bd430ee8f324cad55abf3993ed9b9be63ce693e18a",
+      "tls://ygg2.mk16.de:1338?key=000000d80a2d7b3126ea65c8c08fc751088c491a5cdd47eff11c86fa1e4644ae"
+    ],
+    "max_public_peers": 3
+  },
+  "leaves": [
+    {
+      "name": "Lyra",
+      "role": "blatt",
+      "ifname": "tun1",
+      "admin": "tcp://127.0.0.1:9002",
+      "ipv6": "200:c9c6:5d35:faea:21bb:7015:575e:d190",
+      "pubkey": "9b1cd165028aef2247f554509737a4f0cdfd90367bdd7bc854b7c8a728094dd9",
+      "listen": [],
+      "public_peers": []
+    },
+    {
+      "name": "Xen",
+      "role": "blatt",
+      "ifname": "tun2",
+      "admin": "tcp://127.0.0.1:9003",
+      "ipv6": "206:88fd:8f69:6358:d51b:f718:4ea4:60cf",
+      "pubkey": "02ee04e12d394e55c811cf62b73e612f49719f957e187d58169b7517b19f1588",
+      "listen": [],
+      "public_peers": []
+    },
+    {
+      "name": "Lumia",
+      "role": "blatt",
+      "ifname": "tun3",
+      "admin": "tcp://127.0.0.1:9004",
+      "ipv6": "202:aae7:c08e:1e06:5f67:8e30:8c0c:e6f7",
+      "pubkey": "2aa307ee3c3f34130e39ee7e63210e9dbfe3b117bcbecd0ecc3dadfcbed81bf9",
+      "listen": [],
+      "public_peers": []
+    },
+    {
+      "name": "Elara",
+      "role": "blatt",
+      "ifname": "tun4",
+      "admin": "tcp://127.0.0.1:9005",
+      "ipv6": "202:a46a:fc6c:1ef6:3c54:7f40:b3b1:14d0",
+      "pubkey": "2b72a0727c2138757017e989dd65fc4ebd867304f30dd551778a17ab74528d65",
+      "listen": [],
+      "public_peers": []
+    }
+  ],
+  "peering_matrix": {
+    "Hannover": {
+      "Hannover": null,
+      "Lumia": "LAN",
+      "Lyra": "LAN",
+      "Xen": "LAN",
+      "Elara": "LAN",
+      "ygg1": "TLS",
+      "ygg2": "TLS"
+    },
+    "Lumia": {
+      "Hannover": "LAN/TLS",
+      "Lumia": null,
+      "Lyra": "LAN",
+      "Xen": "LAN",
+      "Elara": "LAN",
+      "ygg1": null,
+      "ygg2": null
+    },
+    "Lyra": {
+      "Hannover": "LAN/TLS",
+      "Lumia": "LAN",
+      "Lyra": null,
+      "Xen": "LAN",
+      "Elara": "LAN",
+      "ygg1": null,
+      "ygg2": null
+    },
+    "Xen": {
+      "Hannover": "LAN/TLS",
+      "Lumia": "LAN",
+      "Lyra": "LAN",
+      "Xen": null,
+      "Elara": "LAN",
+      "ygg1": null,
+      "ygg2": null
+    },
+    "Elara": {
+      "Hannover": "LAN/TLS",
+      "Lumia": "LAN",
+      "Lyra": "LAN",
+      "Xen": "LAN",
+      "Elara": null,
+      "ygg1": null,
+      "ygg2": null
+    }
+  },
+  "lan": "multicast + password on eth/enp/eno then wlan; no tun/ygg beacons",
+  "tls": "only the two DE mk16 uplinks, and only from Hannover",
+  "forbidden": [
+    "Blatt → beliebiger Public-Peer in US/AS/RU",
+    "Blatt → Blatt über WAN, solange Hannover erreichbar ist",
+    "Hannover → mehr als drei Public-Peers",
+    "Offenes Listen auf dem Heimanschluss"
+  ],
+  "targets_ms": {
+    "sister_hannover_lan": 5,
+    "hannover_ygg1_ygg2": 40,
+    "sister_sister": "LAN, not via Nürnberg"
+  },
+  "files": {
+    "hub": "yggdrasil-hannover.conf",
+    "leaf": "yggdrasil-blatt.conf",
+    "remote": "yggdrasil-remote-blatt.conf.template",
+    "live_hub": "yggdrasil.conf"
+  }
+}

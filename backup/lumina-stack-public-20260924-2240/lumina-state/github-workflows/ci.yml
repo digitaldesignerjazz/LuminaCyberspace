@@ -1,0 +1,16 @@
+name: Nexus CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  python:
+    uses: digitaldesignerjazz/nexus-cicd/.github/workflows/reusable-python.yml@main
+    with:
+      python-version: "3.12"
+      source-path: "src"
+      runner: "self-hosted"

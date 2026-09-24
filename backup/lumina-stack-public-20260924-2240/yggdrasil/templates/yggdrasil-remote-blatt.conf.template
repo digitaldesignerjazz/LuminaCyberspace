@@ -1,0 +1,39 @@
+{
+  # yggdrasil-remote-blatt.conf.template
+  # VPS außerhalb Hannovers.
+  # Genau EIN Direct-Peer: Hannover peert OUTBOUND hierher (Heim-Listen bleibt zu).
+  # Höchstens EIN regionaler Public-Peer. Nie die komplette Public-Liste kopieren.
+  # Verboten: Public-Peers in US/AS/RU. Verboten: Blatt↔Blatt über WAN.
+
+  PrivateKey: <PASTE-FROM-GENCONF>
+
+  Peers: [
+    # Optional: höchstens ein regionaler Public-Peer in DE/EU, key-gepinnt.
+    # "tls://<regional-de-or-eu>:1338?key=<pinned>"
+  ]
+  InterfacePeers: {}
+
+  # Remote darf Listen, damit Hannover von zu Hause aus dorthin wählt.
+  Listen: ["tls://0.0.0.0:<PUBLIC-PORT>"]
+
+  AdminListen: "unix:///var/run/yggdrasil/yggdrasil.sock"
+  MulticastInterfaces: []
+
+  AllowedPublicKeys: [
+    "dc1118b0ea1bb2c332de02efc7c35400a0c29dd823bc16d59e64269c89ddaff9"
+  ]
+
+  IfName: "ygg0"
+  IfMTU: 65535
+  NodeInfoPrivacy: false
+  NodeInfo: {
+    name: "<RemoteBlatt>"
+    role: "remote-blatt"
+    hub: "Hannover"
+  }
+}
+
+# Hannover fügt dann EINE Peer-Zeile hinzu (zählt gegen max. 3 Public-Peers,
+# also nur wenn einer der mk16-Slots frei ist — sonst den regionalen Peer
+# des Remote-Blatts nutzen und Hannover unangetastet lassen):
+#   "tls://<REMOTE-HOST>:<PUBLIC-PORT>?key=<REMOTE-PUBKEY>"
