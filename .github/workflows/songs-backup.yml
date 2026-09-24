@@ -9,6 +9,13 @@ jobs:
   backup:
     runs-on: self-hosted
     steps:
+      # Without a checkout the self-hosted workspace is empty and the
+      # test -f checks below fail even though the files are on main.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: songs
+
       - name: Verify song backups exist
         run: |
           test -f songs/cyberspace.md
