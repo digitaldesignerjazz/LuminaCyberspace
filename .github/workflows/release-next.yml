@@ -1,0 +1,79 @@
+name: Release next version
+
+# Creates the next sequential release (SemVer pre-release counter) and publishes
+# the container image. See VERSIONING.md.
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Release channel"
+        required: true
+        type: choice
+        options: [alpha, beta, rc, stable]
+        default: alpha
+      base:
+        description: "Base version X.Y.Z (empty = from latest tag)"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-next
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
+    steps:
+      - name: Checkout (with tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Compute next version
+        id: next
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          BASE: ${{ inputs.base }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          TAG="$(scripts/next-version.sh "$CHANNEL" "$BASE")"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Next release: ${TAG}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.next.outputs.tag }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          set -euo pipefail
+          V="${TAG#v}"
+          PRE=()
+          if [ "$CHANNEL" != stable ]; then PRE=(--prerelease); fi
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Lumina Cyberspace ${V}" \
+            --generate-notes \
+            "${PRE[@]}"
+
+  # Releases created with GITHUB_TOKEN do not trigger other workflows,
+  # so the package is published here directly.
+  publish:
+    needs: release
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/publish-package.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}

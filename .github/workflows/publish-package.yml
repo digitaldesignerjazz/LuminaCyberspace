@@ -6,9 +6,15 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Image version tag (e.g. 1.0.0-alpha)"
+        description: "Existing release tag to (re)build, e.g. v1.0.0-alpha.1"
         required: true
-        default: "1.0.0-alpha"
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: "Release tag to build, e.g. v1.0.0-alpha.2"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -22,20 +28,42 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Resolve version
+      - name: Resolve version and channel
         id: ver
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            V="${{ github.event.release.tag_name }}"
-          else
-            V="${{ inputs.tag }}"
+          set -euo pipefail
+          # workflow_dispatch / workflow_call provide inputs.tag; release event provides the release tag
+          TAG="${INPUT_TAG:-$RELEASE_TAG}"
+          if [ -z "$TAG" ]; then echo "::error::no tag given"; exit 1; fi
+          V="${TAG#v}"
+          TAG="v${V}"
+          if ! [[ "$V" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]]; then
+            echo "::error::tag '$TAG' does not match vX.Y.Z or vX.Y.Z-(alpha|beta|rc).N"; exit 1
           fi
-          V="${V#v}"
-          echo "version=${V}" >> "$GITHUB_OUTPUT"
-          echo "Publishing version ${V}"
+          if [[ "$V" == *-* ]]; then
+            PRE="${V#*-}"          # e.g. alpha.3
+            CHANNEL="${PRE%%.*}"   # e.g. alpha
+          else
+            CHANNEL="latest"       # stable release
+          fi
+          {
+            echo "tag=${TAG}"
+            echo "version=${V}"
+            echo "channel=${CHANNEL}"
+          } >> "$GITHUB_OUTPUT"
+          echo "Publishing ${TAG} as version ${V} (+ channel tag '${CHANNEL}')"
+
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ steps.ver.outputs.tag }}
+
+      - name: Resolve revision
+        id: rev
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -56,7 +84,7 @@ jobs:
             latest=false
           tags: |
             type=raw,value=${{ steps.ver.outputs.version }}
-            type=raw,value=alpha
+            type=raw,value=${{ steps.ver.outputs.channel }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -66,7 +94,7 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: |
-            IMAGE_VERSION=${{ steps.ver.outputs.version }}
+            VERSION=${{ steps.ver.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           # Explicit labels (no auto repo-description / empty licenses label).
           labels: |
@@ -74,5 +102,5 @@ jobs:
             org.opencontainers.image.url=https://github.com/digitaldesignerjazz/LuminaCyberspace
             org.opencontainers.image.title=Lumina Cyberspace
             org.opencontainers.image.version=${{ steps.ver.outputs.version }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.description=Lumina Cyberspace Alpha 1.0 – öffentlicher Snapshot des Lumina/Nexus-Stacks mit Yggdrasil 0.5.14 (ohne Secrets) / public secret-free snapshot of the Lumina/Nexus stack with Yggdrasil 0.5.14
+            org.opencontainers.image.revision=${{ steps.rev.outputs.sha }}
+            org.opencontainers.image.description=Lumina Cyberspace ${{ steps.ver.outputs.version }} – öffentlicher Snapshot des Lumina/Nexus-Stacks mit Yggdrasil 0.5.14 (ohne Secrets) / public secret-free snapshot of the Lumina/Nexus stack with Yggdrasil 0.5.14

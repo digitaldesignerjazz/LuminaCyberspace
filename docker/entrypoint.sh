@@ -1,11 +1,14 @@
 #!/bin/sh
-# Lumina Cyberspace – info entrypoint. Prints the snapshot README and public keys.
-cat <<'BANNER'
+# Lumina Cyberspace – info entrypoint. Prints version, snapshot README and public keys.
+VERSION="$(cat /opt/lumina/VERSION 2>/dev/null || echo "${LUMINA_VERSION:-dev}")"
+IMAGE="ghcr.io/digitaldesignerjazz/lumina-cyberspace:${VERSION}"
+cat <<BANNER
 ==================================================================
-  Lumina Cyberspace – Alpha 1.0 (1.0.0-alpha)
+  Lumina Cyberspace – Version ${VERSION}
   https://github.com/digitaldesignerjazz/LuminaCyberspace
 ==================================================================
 BANNER
+echo "Version: ${VERSION}"
 echo "Yggdrasil: $(yggdrasil -version 2>/dev/null | sed -n "s/^Build version: //p")"
 echo
 if [ -f /opt/lumina/README.md ]; then
@@ -18,18 +21,18 @@ if [ -f /opt/lumina/PUBLIC-KEYS.md ]; then
   grep -E '^(#|\|)' /opt/lumina/PUBLIC-KEYS.md
   echo
 fi
-cat <<'NOTE'
+cat <<NOTE
 ------------------------------------------------------------------
 WICHTIG / IMPORTANT
   Dieses Image enthält KEINE Secrets. PrivateKey/Password in den
   Yggdrasil-Configs sind geschwärzt. Erzeuge deinen eigenen Schlüssel:
   This image contains NO secrets. Supply your own Yggdrasil key:
 
-    docker run --rm ghcr.io/digitaldesignerjazz/lumina-cyberspace:1.0.0-alpha \
+    docker run --rm ${IMAGE} \\
       yggdrasil -genconf > yggdrasil.conf
 
   Snapshot-Dateien liegen unter /opt/lumina. Shell im Container:
-    docker run --rm -it ghcr.io/digitaldesignerjazz/lumina-cyberspace:1.0.0-alpha sh
+    docker run --rm -it ${IMAGE} sh
   Um Yggdrasil im Container zu betreiben, braucht es z.B.
   --cap-add=NET_ADMIN --device /dev/net/tun und eine eigene Config:
     yggdrasil -useconffile /etc/yggdrasil/yggdrasil.conf

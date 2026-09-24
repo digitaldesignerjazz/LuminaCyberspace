@@ -18,3 +18,8 @@ Vor dem Commit mit gitleaks, trufflehog und manuell geprüft: keine Funde.
 Zum Wiederherstellen werden **eigene Private Keys** benötigt (bestehende Schlüssel aus dem privaten,
 nicht veröffentlichten Backup oder neu mit `yggdrasil -genconf` erzeugen) sowie ein eigenes
 Multicast-Passwort. Details siehe `lumina-stack-public-20260924-2240/README.md`.
+
+## Versionen und Releases
+
+Releases werden fortlaufend nummeriert (`v1.0.0-alpha.1`, `v1.0.0-alpha.2`, … → `beta.N` → `rc.N` → `v1.0.0`).
+Schema und Anleitung für das nächste Release: [`VERSIONING.md`](../VERSIONING.md).

@@ -1,15 +1,8 @@
-# Lumina Cyberspace – Alpha 1.0 container image
+# Lumina Cyberspace container image (version via --build-arg VERSION=...)
 # Public, secret-free snapshot of the Lumina/Nexus stack + Yggdrasil 0.5.14.
 FROM debian:bookworm-slim
 
 ARG YGGDRASIL_VERSION=0.5.14
-ARG IMAGE_VERSION=1.0.0-alpha
-
-LABEL org.opencontainers.image.source="https://github.com/digitaldesignerjazz/LuminaCyberspace" \
-      org.opencontainers.image.title="Lumina Cyberspace" \
-      org.opencontainers.image.version="${IMAGE_VERSION}" \
-      org.opencontainers.image.description="Lumina Cyberspace Alpha 1.0 – öffentlicher Snapshot des Lumina/Nexus-Stacks mit Yggdrasil ${YGGDRASIL_VERSION} (ohne Secrets) / public secret-free snapshot of the Lumina/Nexus stack with Yggdrasil ${YGGDRASIL_VERSION}"
-
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends python3 ca-certificates iproute2 curl; \
@@ -21,9 +14,18 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*; \
     yggdrasil -version
 
+# Release version (declared after the apt layer to keep it cached)
+ARG VERSION=dev
+
+LABEL org.opencontainers.image.source="https://github.com/digitaldesignerjazz/LuminaCyberspace" \
+      org.opencontainers.image.title="Lumina Cyberspace" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.description="Lumina Cyberspace – öffentlicher Snapshot des Lumina/Nexus-Stacks mit Yggdrasil ${YGGDRASIL_VERSION} (ohne Secrets) / public secret-free snapshot of the Lumina/Nexus stack with Yggdrasil ${YGGDRASIL_VERSION}"
+
 COPY backup/lumina-stack-public-20260924-2240/ /opt/lumina/
 COPY docker/entrypoint.sh /usr/local/bin/lumina-info
-RUN chmod +x /usr/local/bin/lumina-info
+RUN chmod +x /usr/local/bin/lumina-info && printf '%s\n' "${VERSION}" > /opt/lumina/VERSION
+ENV LUMINA_VERSION=${VERSION}
 
 WORKDIR /opt/lumina
 CMD ["/usr/local/bin/lumina-info"]
