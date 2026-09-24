@@ -1,0 +1,7 @@
+# Only ship what the image needs
+*
+!Dockerfile
+!docker/entrypoint.sh
+!backup/lumina-stack-public-20260924-2240/
+backup/lumina-stack-public-20260924-2240/**/__pycache__
+backup/lumina-stack-public-20260924-2240/**/*.pyc
