@@ -63,12 +63,32 @@ Public repository opened for transparent evolution of the swarm intelligence lay
 
 ## Activation
 
+**Container (quickest start):**
+
 ```bash
-# Conceptual activation sequence (local / node)
-./scripts/nexus_orchestrator.sh full-report
-# Swarm skilllogin & state load handled by agent skills
-# Overlay demo: python prototypes/lumina_node.py  (in lumina-network)
+# Pull the latest alpha and print version, snapshot info and public keys
+docker run --rm ghcr.io/digitaldesignerjazz/lumina-cyberspace:alpha
+
+# Generate your own Yggdrasil key (the image contains no secrets)
+docker run --rm ghcr.io/digitaldesignerjazz/lumina-cyberspace:alpha \
+  yggdrasil -genconf > yggdrasil.conf
 ```
+
+**From the public snapshot in this repo:**
+
+```bash
+SNAP=backup/lumina-stack-public-20260924-2240
+
+# Nexus orchestrator (no arguments)
+python3 $SNAP/nexus/python/nexus_orchestrator.py
+
+# Lumina Network overlay node prototype (needs PyNaCl)
+pip install pynacl
+cd $SNAP/lumina-network/prototypes && python3 lumina_node.py
+```
+
+Private keys are not part of the snapshot; generate your own before joining the mesh.
+See [VERSIONING.md](VERSIONING.md) for release and image tags.
 
 ---
 
