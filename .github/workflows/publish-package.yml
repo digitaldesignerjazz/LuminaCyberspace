@@ -57,10 +57,6 @@ jobs:
           tags: |
             type=raw,value=${{ steps.ver.outputs.version }}
             type=raw,value=alpha
-          labels: |
-            org.opencontainers.image.title=Lumina Cyberspace
-            org.opencontainers.image.version=${{ steps.ver.outputs.version }}
-            org.opencontainers.image.source=https://github.com/digitaldesignerjazz/LuminaCyberspace
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -72,5 +68,11 @@ jobs:
           build-args: |
             IMAGE_VERSION=${{ steps.ver.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          annotations: ${{ steps.meta.outputs.annotations }}
+          # Explicit labels (no auto repo-description / empty licenses label).
+          labels: |
+            org.opencontainers.image.source=https://github.com/digitaldesignerjazz/LuminaCyberspace
+            org.opencontainers.image.url=https://github.com/digitaldesignerjazz/LuminaCyberspace
+            org.opencontainers.image.title=Lumina Cyberspace
+            org.opencontainers.image.version=${{ steps.ver.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.description=Lumina Cyberspace Alpha 1.0 – öffentlicher Snapshot des Lumina/Nexus-Stacks mit Yggdrasil 0.5.14 (ohne Secrets) / public secret-free snapshot of the Lumina/Nexus stack with Yggdrasil 0.5.14
